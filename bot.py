@@ -13,9 +13,10 @@ def send_telegram(text):
 
 def check_flights():
     headers = {
-        "Authorization": f"Bearer {DUFFEL_TOKEN}",
-        "Duffel-Version": "v1",
-        "Content-Type": "application/json"
+       "Authorization": f"Bearer {DUFFEL_TOKEN}",
+    "Duffel-Version": "v2",
+    "Accept": "application/json",
+    "Content-Type": "application/json",
     }
 
     payload = {
@@ -34,12 +35,13 @@ def check_flights():
     }
 
     r = requests.post(
-        "https://api.duffel.com/air/offer_requests",
+        "https://api.duffel.com/air/offer_requests?return_offers=true",
         headers=headers,
         json=payload,
         timeout=30
     )
-    r.raise_for_status()
+    if not r.ok:
+        raise Exception(f"Duffel error {r.status_code}: {r.text}")
 
     offers = r.json()["data"]["offers"]
 
